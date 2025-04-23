@@ -1,0 +1,13 @@
+/AdventureGame
+├── ✅ main.cpp                // Entry point - runs the game
+├── ✅ Game.h / Game.cpp       // Controls the game flow (floors, rooms, game state)
+├── ✅ Player.h / Player.cpp   // Player stats, leveling, damage, etc.
+├── ✅Enemy.h / Enemy.cpp     // Enemy types and behavior
+├── ❌ Inventory.h / Inventory.cpp // Manages coins, items, equip system
+├── ❌ Item.h                  // Structs and enums for weapons/shields
+├── ❌ Shop.h / Shop.cpp       // Trader logic - sells items
+├── ❌ Battle.h / Battle.cpp   // Combat system (battle loop)
+├── ✅ floor.h / floor.cpp // Room generation, floor progression
+├── ❌ Utils.h / Utils.cpp     // Utility functions like random numbers, display helpers
+├── ❌ SaveSystem.h / SaveSystem.cpp     // (Later) Saving/loading player progress
+└── ❌ UI.h / UI.cpp // UI to display everything

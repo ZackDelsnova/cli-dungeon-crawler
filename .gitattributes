@@ -1,0 +1,23 @@
+# Normalize line endings for source files
+*.cpp text eol=lf
+*.h   text eol=lf
+
+# Treat other text files properly
+*.md  text
+*.txt text
+
+# Mark binaries (no diffs shown for these)
+*.exe binary
+*.dll binary
+*.o   binary
+*.out binary
+
+# VSCode workspace settings as text
+*.code-workspace text
+
+# Ensure GitHub correctly classifies the repo as C++
+*.cpp linguist-language=C++
+*.h   linguist-language=C++
+
+# Prevent Git from modifying executable files
+*.exe -text
