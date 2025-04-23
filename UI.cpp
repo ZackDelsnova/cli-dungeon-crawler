@@ -38,39 +38,14 @@ void UI::displayRoomInfo(const Floor& floor) {
     std::cout << "=== Room Information ===\n";
     std::cout << "Room #" << currentRoom + 1 << "\n"; 
     std::cout << "Room Type: ";
-    switch (type) {
-        case RoomType::Spawner:
-            std::cout << "Spawner\n";
-            break;
-        case RoomType::Rest:
-            std::cout << "Rest\n";
-            break;
-        case RoomType::Trader:
-            std::cout << "Trader\n";
-            break;
-        case RoomType::Elite:
-            std::cout << "Elite\n";
-            break;
-        case RoomType::Boss:
-            std::cout << "Boss\n";
-            break;
-        case RoomType::Chest:
-            std::cout << "Treasure Room\n";
-            break;
-        case RoomType::NextFloor:
-            std::cout << "Teleporter to Next Floor";
-            break;
-        default:
-            std::cout << "Unknown\n";
-            break;
-    }
-    std::cout << "\nRoom Description: " << desc << "\n\n";
+    displayRoomType(type);
+    std::cout << "\n\nRoom Description: " << desc << "\n\n";
 
     goBack();
 }
 
 void UI::displayEnemyCount(int count) {
-    std::cout << "\nEnemies in this room: " << count << "\n";
+    std::cout << "Enemies in this room: " << count << "\n";
 }
 
 /*void UI::showEnemyInfo(const BattleSystem& battleSystem) {
@@ -90,16 +65,9 @@ void UI::displayMapLayout(const Floor& floor) {
     for (size_t i = 0;i < rooms.size(); ++i) {
         if (i == currentRoom) std::cout << ">>";
 
+        RoomType type = rooms[i].type;
         std::cout << "[" << i + 1 << "] ";
-        switch (rooms[i].type) {
-            case RoomType::Rest: std::cout << "Rest"; break;
-            case RoomType::Spawner: std::cout << "Spawner"; break;
-            case RoomType::Trader: std::cout << "Trader"; break;
-            case RoomType::Elite: std::cout << "Elite"; break;
-            case RoomType::Boss: std::cout << "Boss"; break;
-            case RoomType::Chest: std::cout << "Chest"; break;
-            case RoomType::NextFloor: std::cout << "Next"; break;
-        }
+        displayRoomType(type);
 
         if (i == currentRoom) std::cout << "<<";
         if ( i != rooms.size() -1) std::cout << " -> ";
@@ -120,8 +88,43 @@ void UI::displayEnemyDetails(const Enemy& enemy) {
     goBack();
 }
 
+void UI::displayRoomType(RoomType& type) {
+    switch (type) {
+        case RoomType::Spawner:
+            std::cout << "Spawner";
+            break;
+        case RoomType::Rest:
+            std::cout << "Rest";
+            break;
+        case RoomType::Trader:
+            std::cout << "Trader";
+            break;
+        case RoomType::Elite:
+            std::cout << "Elite";
+            break;
+        case RoomType::Boss:
+            std::cout << "Boss";
+            break;
+        case RoomType::Chest:
+            std::cout << "Treasure Room";
+            break;
+        case RoomType::NextFloor:
+            std::cout << "Teleporter to Next Floor";
+            break;
+        default:
+            std::cout << "Unknown";
+            break;
+    }
+}
+
 void UI::goBack() {
     std::cout << "Press enter to go back...";
+    std::cin.ignore();
+    std::cin.get();
+}
+
+void UI::continueClick() {
+    std::cout << "Press enter to continue...";
     std::cin.ignore();
     std::cin.get();
 }

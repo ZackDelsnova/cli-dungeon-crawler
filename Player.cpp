@@ -16,12 +16,12 @@ Player::Player(std::string playerName) {
 }
 
 void Player::displayInfo() const {
-    std::cout << "== " << name << " ==\n";
-    std::cout << "HP: " << stats.hp << "/" << stats.maxHP << "\n";
-    std::cout << "ATK: " << stats.atk << " | DEF: " << stats.def << " | LVL: " << stats.level 
-              << "| EXP: " << stats.exp << "/" << requiredEXPToLevel() << "\n";
-    std::cout << "Crit%: " << stats.critChance << " | Crit Dmg: " << stats.critDmg << "\n";
-    std::cout << "Coins: " << coins << "\n\n";
+    std::cout << "== " << getName() << " ==\n";
+    std::cout << "HP: " << getHP() << "/" << getMaxHP() << "\n";
+    std::cout << "ATK: " << getATK() << " | DEF: " << getDEF() << " | LVL: " << getLevel() 
+              << "| EXP: " << getEXP() << "/" << requiredEXPToLevel() << "\n";
+    std::cout << "Crit%: " << getCritChance() << " | Crit Dmg: " << getCritDmg() << "\n";
+    std::cout << "Coins: " << getCoins() << "\n\n";
 
 }
 
@@ -47,12 +47,12 @@ double Player::requiredEXPToLevel() const {
 void Player::levelUp() {
     stats.level++;
     stats.maxHP += 50;
-    stats.hp = stats.maxHP;
+    stats.hp = getMaxHP();
     stats.atk += 10;
     stats.def += 10;
-    stats.critChance += stats.critChance > 100.0 ? 0 : 1;
-    stats.critDmg += stats.critChance > 100 ? stats.critChance * 0.25 : 0;
-    std::cout << name << " leveled up to " << stats.level << "!\n";
+    stats.critChance += getCritChance() > 100.0 ? 0 : 1;
+    stats.critDmg += getCritChance() > 100 ? getCritChance() * 0.25 : 0;
+    std::cout << getName() << " leveled up to " << stats.level << "!\n";
 }
 
 bool Player::isCriticalHit() {
@@ -62,15 +62,15 @@ bool Player::isCriticalHit() {
 //action methods
 double Player::attack() {
     bool isCrit = isCriticalHit();
-    double damage = stats.atk * (isCrit ? stats.critDmg/100.0 : 1.0);
+    double damage = getATK() * (isCrit ? getCritDmg()/100.0 : 1.0);
     if (isCrit) std::cout << "CRITICAL HIT!\n";
-    std::cout << name << " attacks with " << damage << " damage\n";
+    std::cout << getName() << " attacks with " << damage << " damage\n";
     return damage; // will use this in battle logic to inflit damage to enemy 
 }
 
 void Player::defend() {
     isDefending = true;
-    std::cout << name << " braces for impact! DEF is doubled this turn.\n";
+    std::cout << getName() << " braces for impact! DEF is doubled this turn.\n";
 }
 
 bool Player::getIsDefending() const {
@@ -135,23 +135,30 @@ bool Player::useCoins(int amt) {
 }
 
 void Player::setHP(double newHP) {
-    if (newHP < 0) newHP = 0;
+    if (newHP <= 0) {
+        newHP = 0;
+        isAlive = false;
+    } 
     if (newHP > stats.maxHP) newHP = stats.maxHP;
     stats.hp = newHP;
+}
+
+void Player::decreaseHP(double hpDecrease) {
+    stats.hp -= hpDecrease;
+    if (stats.hp <= 0) {
+        setHP(0);
+    }
 }
 
 void Player::takeDamage(double dmg) {
     double effectiveDef = isDefending ? stats.def * 2 : stats.def;
     double actualDamage = dmg - effectiveDef;
-    if (actualDamage < 0) actualDamage = 0;
-    
-    stats.hp -= actualDamage;
-    if (stats.hp < 0) {      
-        stats.hp = 0;
-        isAlive = false;
-    }
 
-    std::cout << name << " took " << actualDamage << " damage! HP now: " << stats.hp << "\n";
+    if (actualDamage <= 0) actualDamage = 0;
+    
+    decreaseHP(actualDamage);
+
+    std::cout << getName() << " took " << actualDamage << " damage! HP now: " << stats.hp << "\n";
 }
 
 //check in battle logic
@@ -162,5 +169,5 @@ bool Player::isDead() const {
 void Player::heal() {
     double healAmount = 0.2 * stats.maxHP;
     setHP(stats.hp + healAmount);
-    std::cout << name << " healed to " << stats.hp << " HP.\n";
+    std::cout << getName() << " healed to " << stats.hp << " HP.\n";
 }

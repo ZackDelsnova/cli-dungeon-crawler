@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
+#include <chrono>
+#include <thread>
 #include "game.h"
 
 Game::Game() : floor(1) { }
@@ -83,6 +85,7 @@ void Game::startNewGame() {
 
         if(name.empty() || name.length() > 20 || std::all_of(name.begin(), name.end(), isspace)) {
             std::cout << "Invalid name. Try again.\n";
+            std::this_thread::sleep_for(std::chrono::seconds(3));
         } else {
             break;
         }
@@ -105,22 +108,23 @@ void Game::enterRoom(Floor& floor) {
     while (inRoom)
     {
         UI::clearScreen();
-        std::cout<< "=== Floor " << floor.getFloorNumber() << " | Room " << floor.getCurrentRoomNumber() + 1 << " ===\n";
+        std::cout << "=== Floor " << floor.getFloorNumber() << " | Room " << floor.getCurrentRoomNumber() + 1 << " ===\n";
         std::cout << "Actions available: \n";
-        std::cout << "1. Go Back\n";
-        std::cout << "2. Room Information\n";
+        std::cout << "1.Go Back\n";
+        std::cout << "2.Room Information\n";
         if (currentRoom.type == RoomType::Spawner /*|| 
             currentRoom.type == RoomType::Elite || 
             currentRoom.type == RoomType::Boss */) 
         {
-            std::cout << "3. Enter Battle\n";
+            std::cout << "3.Enter Battle\n";
         }
-        std::cout << "4. Next Room\n";
+        std::cout << "4.Next Room\n";
         std::cout << "Enter your action: ";
         int choice = utils::getValidatedInput(1, 4);
 
         if (choice == 4 && !currentRoom.isRoomCompleted) {
             std::cout << "Room not completed. Defeat all enemies first!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(3));
             continue; 
         } 
 

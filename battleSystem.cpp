@@ -10,8 +10,9 @@ BattleSystem::BattleSystem() {
 // Current Battle Status
 void BattleSystem::showBattleStatus(const Player& player, const Enemy& enemy) {
     UI::clearScreen();
-    std::cout << "Player: " << player.getName() << " | HP: " << player.getHP() << "/" << player.getMaxHP() << std::endl;
-    std::cout << "Enemy: " << enemy.getName() << " | HP: " << enemy.getHP() << "/" << enemy.getMaxHP() << std::endl;
+    UI::displayEnemyCount(enemyList.size());
+    std::cout << "Player: " << player.getName() << " | HP: " << player.getHP() << "/" << player.getMaxHP() << "\n";
+    std::cout << "Enemy: " << enemy.getName() << " | HP: " << enemy.getHP() << "/" << enemy.getMaxHP() << "\n";
 }
 
 void BattleSystem::setEnemyList(const std::vector<Enemy>& enemies) {
@@ -21,6 +22,15 @@ void BattleSystem::setEnemyList(const std::vector<Enemy>& enemies) {
 }
 
 void BattleSystem::battleAllEnemies(Player& player) {
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    if (enemyList.empty()) {
+        std::cout << "No enemies to fight!\n";
+        isBattleOver = true;
+        return;
+    }
+    
     while (currentEnemyIndex < enemyList.size()) {
         startBattle(player);
         if (player.isDead()) {
@@ -35,7 +45,7 @@ void BattleSystem::battleAllEnemies(Player& player) {
 
     if (!player.isDead()) {
         std::cout << "You have defeated all enemies in the room!\n";
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
     
     isBattleOver = true;
@@ -47,6 +57,9 @@ Enemy BattleSystem::getCurrentEnemy() const {
 
 // Main Battle loop
 void BattleSystem::startBattle(Player& player) {
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
     if (currentEnemyIndex >= enemyList.size()) {
         std::cout << "No more enemies to fight.\n";
         isBattleOver = true;
@@ -55,10 +68,15 @@ void BattleSystem::startBattle(Player& player) {
 
     isBattleOver = false;
     Enemy& enemy = enemyList[currentEnemyIndex];
+
     UI::displayEnemyDetails(enemy);
     showBattleStatus(player, enemy);
 
     while (!isBattleOver) {
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        enemy.decideNextTurn();
         // Player turn
         playerTurn(player, enemy);
         if (enemy.isDead()) {
@@ -72,7 +90,7 @@ void BattleSystem::startBattle(Player& player) {
             handleBattleOutcome(player, enemy);
             break;
         }
-        
+        UI::continueClick();
         showBattleStatus(player, enemy);
     }
 }
@@ -85,20 +103,14 @@ void BattleSystem::playerTurn(Player& player, Enemy& enemy) {
         UI::clearScreen();
         showBattleStatus(player, enemy);
         std::cout << player.getName() << "'s Turn!" << "\n";
-        std::cout << "Choose your action: \n" 
-                  << "0.Debug Attack\n"
+        std::cout << "Action available: \n" 
                   << "1.Attack\n" 
                   << "2.Defend\n"
                   << "3.Heal\n";
-        int choice = utils::getValidatedInput(0, 3);
+        std::cout << "Choose your action: \n"; 
+        int choice = utils::getValidatedInput(1, 3);
 
         switch (choice) {
-            case 0: {
-                actionChosen = true;
-                double dmg = enemy.getMaxHP() * 2;
-                enemy.takeDamage(dmg);
-                break;
-            }
             case 1: {
                 actionChosen = true;
                 double dmg = player.attack();

@@ -11,16 +11,22 @@ Enemy::Enemy(std::string enemyName, Stats enemyStats, std::string info)
     }
 
 void Enemy::scaleByLevel() {
-    stats.maxHP = (stats.maxHP * stats.level) / 2;
-    stats.hp = stats.maxHP;
-    stats.atk = (stats.atk * stats.level) / 2;
-    stats.def = (stats.def * stats.level) / 2;
-    stats.critChance = (stats.critChance * stats.level) / 2;
-    stats.critDmg += stats.critChance > 80.0 ? stats.critChance * 0.5 : 0;
-    stats.critChance = stats.critChance > 100.0 ? 100 : stats.critChance;
-    int baseReward = stats.level * 10;
+    stats.maxHP = (getMaxHP() * getLevel()) / 2;
+    stats.hp = getMaxHP();
+    stats.atk = (getATK() * getLevel()) / 2;
+    stats.def = (getDEF() * getLevel()) / 2;
+    stats.critChance = (getCritChance() * getLevel()) / 2;
+    stats.critDmg += getCritChance() > 80.0 ? getCritChance() * 0.5 : 0;
+    stats.critChance = getCritChance() > 100.0 ? 100 : getCritChance();
+    int baseReward = getLevel() * 10;
     coins = baseReward + (rand() % 11 - 5); // +- 5 varaiation
     exp = static_cast<double>(baseReward + (rand() % 11 - 5)); // same as coins
+    isAlive = true;
+    hasHealed = false;
+}
+
+int Enemy::getLevel() const {
+    return stats.level;
 }
 
 int Enemy::getCoins() const {
@@ -32,11 +38,11 @@ double Enemy::getEXP() const {
 }
 
 void Enemy::displayInfo() const {
-    std::cout << "== " << name << " ==\n";
+    std::cout << "== " << getName() << " ==\n";
     std::cout << "Description: " << description << "\n\n";
-    std::cout << "HP: " << stats.hp << "/" << stats.maxHP << "\n";
-    std::cout << "ATK: " << stats.atk << " | DEF: " << stats.def << " | LVL: " << stats.level << "\n";
-    std::cout << "Crit%: " << stats.critChance << " | Crit Dmg: " << stats.critDmg << "\n\n";
+    std::cout << "HP: " << getHP() << "/" << getMaxHP() << "\n";
+    std::cout << "ATK: " << getATK() << " | DEF: " << getDEF() << " | LVL: " << getLevel() << "\n";
+    std::cout << "Crit%: " << getCritChance() << " | Crit Dmg: " << getCritDmg() << "\n\n";
 }
 
 std::string Enemy::getName() const {
@@ -45,10 +51,10 @@ std::string Enemy::getName() const {
 
 double Enemy::attack() {
     bool isCrit = isCriticalHit();
-    double damage = stats.atk * (isCrit ? stats.critDmg/100.0 : 1.0);
+    double damage = getATK() * (isCrit ? getCritDmg()/100.0 : 1.0);
     if (isCrit) std::cout << "CRITICAL HIT!\n";
-    std::cout << name << " attacks with " << damage << " damage\n";
-    return damage; // will use this in battle logic to inflit damage to enemy 
+    std::cout << getName() << " attacks with " << damage << " damage\n";
+    return damage; // will use this in battle logic to inflict damage to enemy 
 }
 
 double Enemy::getATK() const {
@@ -61,7 +67,7 @@ double Enemy::getDEF() const {
 
 void Enemy::defend() {
     isDefending = true;
-    std::cout << "Enemy " << name << " braces for impact! DEF is doubled this turn.\n";
+    std::cout << "Enemy " << getName() << " braces for impact! DEF is doubled this turn.\n";
 }
 
 bool Enemy::getIsDefending() const {
@@ -93,7 +99,10 @@ double Enemy::getMaxHP() const {
 }
 
 void Enemy::setHP(double newHP) {
-    if (newHP < 0) newHP = 0;
+    if (newHP <= 0) {
+        newHP = 0;
+        isAlive = false;
+    } 
     if (newHP > stats.maxHP) newHP = stats.maxHP;
     stats.hp = newHP;
 }
@@ -104,37 +113,58 @@ void Enemy::heal() {
     std::cout << "Enemy " << name << " healed to " << stats.hp << " HP.\n";
 }
 
+void Enemy::decreaseHP(double hpDecrease) {
+    stats.hp -= hpDecrease;
+    if (stats.hp <= 0) {
+        setHP(0);
+    }
+}
+
 void Enemy::takeDamage(double dmg) {
-    double effectiveDmg = isDefending ? stats.def * 2 : stats.def;
+    double effectiveDmg = isDefending ? getDEF() * 2 : getDEF();
     double actualDamage = dmg - effectiveDmg;
 
-    if (actualDamage < 0) actualDamage = 0;
+    if (actualDamage <= 0) actualDamage = 0;
 
-    stats.hp -= actualDamage;
-    if (stats.hp < 0) {
-        stats.hp = 0;
-        isAlive = false;
-    }
-    std::cout << "Enemy " << name << " took " << actualDamage << " damage! HP now: " << stats.hp << "\n";
+    decreaseHP(actualDamage);
+
+    std::cout << "Enemy " << getName() << " took " << actualDamage << " damage! HP now: " << getHP() << "\n";
 }
 
 bool Enemy::isDead() const {
     return !isAlive;
 }
 
-void Enemy::takeTurn(Player& player) {
-    if (stats.hp < (0.2 * stats.maxHP) && !hasHealed) {
-        heal();
-        hasHealed = true;
+void Enemy::decideNextTurn() {
+    isDefending = false;
+
+    if (getHP() < (0.2 * getMaxHP()) && !hasHealed) {
+        nextAction = EnemyAction::Heal;
         return;
     }
 
     int rng = rand() % 100;
 
     if (rng < 80) {
-        std::cout << "Enemy " << name << " attacks!\n";
-        player.takeDamage(stats.atk);
+        nextAction = EnemyAction::Attack;
     } else {
+        nextAction = EnemyAction::Defend;
         defend();
+    }
+}
+
+void Enemy::takeTurn(Player& player) {
+    switch (nextAction) {
+        case EnemyAction::Attack: 
+            std::cout << "Enemy " << getName() << " attacks!\n";
+            player.takeDamage(attack());
+            break;
+        case EnemyAction::Heal:
+            heal();
+            hasHealed = true;
+            break;
+        case EnemyAction::Defend:
+            resetDefense();
+            break;
     }
 }

@@ -14,6 +14,8 @@ class UI {
         static int showMenu(const Floor& floor);
         //static void showEnemyInfo(const BattleSystem& BattleSystem);
         static void goBack();
+        static void continueClick();
+        static void displayRoomType(RoomType& type);
         static void displayEnemyCount(int count);
         static void displayRoomInfo(const Floor& floor);
         static void displayMapLayout(const Floor& floor);

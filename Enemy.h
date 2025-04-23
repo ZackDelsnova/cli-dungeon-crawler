@@ -2,6 +2,12 @@
 #include "Player.h"
 #include <string>
 
+enum class EnemyAction {
+    Attack,
+    Defend,
+    Heal
+};
+
 class Enemy {
     public:
         struct Stats
@@ -17,24 +23,27 @@ class Enemy {
 
         Enemy(); // default constructr
         Enemy(std::string enemyName, Stats enemyStats, std::string info); // custom constructor
+        EnemyAction nextAction;
 
         // generals
         void scaleByLevel();
         double attack();
-        void takeDamage(double dmg); //done
-        void defend(); //done
-        void heal(); //done
-        void resetDefense(); //done
-        void takeTurn(Player& player); //done
-        void displayInfo() const; //done
+        void takeDamage(double dmg);
+        void defend();
+        void heal();
+        void resetDefense();
+        void decideNextTurn();
+        void takeTurn(Player& player);
+        void displayInfo() const;
 
         //getters
-        std::string getName() const; //done
-        double getHP() const; //done
-        double getMaxHP() const; //done
+        std::string getName() const;
+        int getLevel() const;
+        double getHP() const;
+        double getMaxHP() const;
         double getATK() const;
         double getDEF() const;
-        bool getIsDefending() const; //done
+        bool getIsDefending() const;
         double getCritChance() const; 
         double getCritDmg() const;
         bool isCriticalHit();
@@ -43,7 +52,8 @@ class Enemy {
         double getEXP() const;
 
         //setters
-        void setHP(double newHP); //done
+        void setHP(double newHP);
+        void decreaseHP(double HP);
 
         //public variables
         bool isAlive = true;

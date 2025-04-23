@@ -46,6 +46,7 @@ class Player {
 
         // setter
         void setHP(double newHP);
+        void decreaseHP(double HP);
         void setEXP(double newEXP);
         void addCoins(int newCoin);
         bool useCoins(int amt);
