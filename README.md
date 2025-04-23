@@ -1,3 +1,5 @@
+# Note: This is something I made to learn CPP if there is any problem use the Issues Button to message me I'll try to respond
+
 # ⚔️ Terminal Adventure - C++ Roguelike
 
 A text-based roguelike adventure game built in C++! Fight enemies, explore floors, and see how long you can survive. Inspired by traditional dungeon crawlers and Dark Souls vibes.
@@ -35,7 +37,7 @@ A text-based roguelike adventure game built in C++! Fight enemies, explore floor
 
 ## 📦 Releases
 
-Download the latest build from the (Wait for some time).
+Download the latest build from the [Releases section](https://github.com/ZackDelsnova/cli-dungeon-crawler/releases).
 
 ---
 
