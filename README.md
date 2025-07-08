@@ -1,4 +1,4 @@
-# Note: This is something I made to learn CPP if there is any problem use the Issues Button to message me I'll try to respond
+# Note: This is something I made to learn CPP
 
 # ⚔️ Terminal Adventure - C++ Roguelike
 
