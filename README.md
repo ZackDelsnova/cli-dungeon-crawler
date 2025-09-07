@@ -1,4 +1,5 @@
 # Note: This is something I made to learn CPP
+### pls note: this is somewhat vroken as it works one time and doesnt the next time, probably a issue with memory/reference management bur idk how to fix it as it only hapens once every few times so i cant help with it
 
 # ⚔️ Terminal Adventure - C++ Roguelike
 
@@ -49,20 +50,4 @@ Download the latest build from the [Releases section](https://github.com/ZackDel
 - 💾 Save/load system
 
 ---
-<!--
-## Contributing
 
-If you'd like to contribute — fork the repo, make changes, and submit a pull request! Ideas, code improvements, or even story suggestions are welcome.
-
----
-
-## 📜 License
-
-MIT License (or specify if you want a different one).
-
----
-
-## 💬 Contact
-
-Feel free to reach out via GitHub Issues or Discussions!
--->
